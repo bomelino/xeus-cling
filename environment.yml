@@ -6,4 +6,6 @@ dependencies:
   - xtensor=0.21.2
   - xtensor-blas=0.17.1
   - notebook
-  - jupyter_nbextensions_configurator
+  - pip:
+    - jupyter_nbextensions_configurator
+    - jupyter_contrib_nbextensions
