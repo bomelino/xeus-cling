@@ -83,6 +83,7 @@ define([
 
             var config = new configmod.ConfigSection('tree',{ base_url : utils.get_body_data("baseUrl") } );
             config.loaded.then(function() {
+                /* brauchen wir nicht?
                 if ( !AlgoVizConfig.update ) {
                     AlgoVizConfig.update = config.data.algoviz.update;
                 }
@@ -94,6 +95,7 @@ define([
                 if ( !AlgoVizConfig.update_path ) {
                     AlgoVizConfig.update_path = config.data.algoviz.update_path;
                 }
+                */
 
                 /*
                 requirejs(['./Overlay','./Hint'], function () {
@@ -101,6 +103,7 @@ define([
                 });
                 */
 
+                /*
                 var but = document.getElementById("aud-update-button");
                 if ( (AlgoVizConfig.update == "true") && (AlgoVizConfig.update_url != null ) ) {
                     but.addEventListener("click", () => { updateHome(); });
@@ -144,6 +147,7 @@ define([
                     updateButton.onclick = (event) => { updateHome(); };
                     document.querySelector("#refresh_notebook_list").parentNode.appendChild(updateButton);
                 }
+                */
             });
             config.load();
         });
