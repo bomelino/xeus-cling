@@ -4,3 +4,4 @@ jupyter labextension install @jupyter-widgets/jupyterlab-manager@0.38 --minimize
 
 jupyter nbextension install nbextensions/algoviz/ --user
 jupyter nbextension enable algoviz/AlgoViz --section='common'
+jupyter nbextensions_configurator enable --user
