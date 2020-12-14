@@ -136,7 +136,7 @@ define([
                     nextMessage(true);
                 });
 
-                setInterval( nextMessage ,5000);
+                
 
                 if ( (AlgoVizConfig.update == "true") && (AlgoVizConfig.update_url != null ) ) {
                     var updateButton = document.createElement("button");
@@ -148,6 +148,8 @@ define([
                     document.querySelector("#refresh_notebook_list").parentNode.appendChild(updateButton);
                 }
                 */
+
+                setInterval( nextMessage ,5000);
             });
             config.load();
         });
