@@ -146,7 +146,7 @@ public:
              gHeight = (height + 40) / this->rowHeight + ((height + 40) % this->rowHeight > 0 ? 1 : 0);
          }
 
-         AlgoViz::js("this.createSVGCanvas("+to_string(this->id)+",width=500,height=500)");
+         AlgoViz::js("createSVGCanvas("+to_string(this->id)+",width=500,height=500)");
      }
   
      SVG(int width, int height, std::string title = "SVG") : SVG(width,height,0,0,title) 
