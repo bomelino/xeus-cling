@@ -88,6 +88,9 @@ public:
      void setFill(int red, int green, int blue, float alpha = 1.0);
   
      void setStrokeWidth(int width);
+
+     // returns all attributes as json
+     string jsonAttributes(); 
   
      friend inline bool operator==(const SVGElement &left, const SVGElement &right);
   
@@ -206,7 +209,9 @@ public:
             // iterate over elements 
             SVGElement * e = entry.second;
             if(e->dirty){
-                cmd += "this.change("+to_string(e->id)+",{type:'"+e->type+"',x:"+to_string(e->x)+",y:"+to_string(e->y)+"});\n";
+                char * b;
+                asprintf(b,"this.change(%i,%s)",e->type,e->jsonAttributes());
+                cmd += b;
             }
         }
         cmd += "this.draw()";
@@ -459,6 +464,16 @@ public:
  }
   
   
+
+ string jsonAttributes(){
+
+    std::string attr = "{ 'type': '"+this->type+"', "
+            "x : " + to_string(this->x) + ","
+            "y : " + to_string(this->y) + ","
+            "}";
+    return attr;    
+    
+ } 
  void SVGElement::addTo(SVG *svg) {
      if ( this->svg != nullptr ) return;
      this->id = svg->addElement(this);
