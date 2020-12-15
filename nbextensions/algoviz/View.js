@@ -704,6 +704,7 @@ class SVGCanvasView extends View{
          this.w = w 
          this.h = h
          this.canvas = document.createElement("CANVAS");
+         this.canvas.id = "canvas_"+id
          this.canvas.width = w
          this.canvas.height = h 
          this.content.appendChild(this.canvas);
@@ -713,6 +714,11 @@ class SVGCanvasView extends View{
 
          // for debugging
          window.view = this
+   }
+
+
+   getCanvas(){
+      return document.getElementById("canvas_"+this.id)
    }
 
    js(cmd){
@@ -747,7 +753,9 @@ class SVGCanvasView extends View{
    /** refresh canvas, draw everything */
    draw(){
       // refresh
-      this.ctx.clearRect(0,0,this.w,this.h)
+      const canvas = this.getCanvas() 
+      const ctx = canvas.getContext("2d")
+      ctx.clearRect(0,0,this.w,this.h)
 
       for (const [id, element] of Object.entries(this.elements)){
          //
@@ -756,16 +764,16 @@ class SVGCanvasView extends View{
             const x = element.x || 0
             const y = element.y || 0
             const radius = element.radius || 100
-            this.ctx.beginPath();
-            this.ctx.arc(x,y,radius, 0, 2 * Math.PI, false);
+            ctx.beginPath();
+            ctx.arc(x,y,radius, 0, 2 * Math.PI, false);
             if(element.fillStyle){
-               this.ctx.fillStyle = element.fillStyle;
-               this.ctx.fill();
+               ctx.fillStyle = element.fillStyle;
+               ctx.fill();
             }
-            this.ctx.lineWidth = element.lineWidth || 1;
+            ctx.lineWidth = element.lineWidth || 1;
 
-            this.ctx.strokeStyle = '#003300';
-            this.ctx.stroke();
+            ctx.strokeStyle = '#003300';
+            ctx.stroke();
          }
       }  
    }
