@@ -1022,11 +1022,11 @@ define([
     /** new buffered svg view
     this gets called directly via eval (js message)
     */
-    function createSVGBuffered(id,width=500,height=500,gwidth=1,gheight=1,title="buffered svg view") {
-        console.log("creating buffered svg view")
+    function createSVGCanvas(id,width=500,height=500,gwidth=1,gheight=1,title="buffered svg view") {
+        console.log("creating svg canvas view")
         if ( AlgoViz.views == null ) AlgoViz.views = [];        
 
-        var view = new SVGBufferedView(id,width,height,gwidth,gheight,title);
+        var view = new SVGCanvasView(id,width,height,gwidth,gheight,title);
         algoviz_container.append(view.div);        
         
         if ( AlgoViz.views[id] != null ) {

@@ -12,17 +12,19 @@
  using namespace std;
   
  class AlgoViz;
- class SVG;
-  
+ class SVGBuffered;
  class SVGElement
  {
   
  protected:
-     SVG *svg;
+     SVGBuffered *svg;
+     SVGBuffered *view;
+
      int x;
      int y;
      int id;
      int alpha;
+     bool dirty;
      void (*clickHandler)(SVGElement *);
      map<std::string,std::string> attributes = map<std::string,std::string>();
   
@@ -145,7 +147,7 @@
              gHeight = (height + 40) / this->rowHeight + ((height + 40) % this->rowHeight > 0 ? 1 : 0);
          }
 
-         AlgoViz::js("this.createSVGBuffered("+to_string(this->id)+",width=500,height=500)")
+         AlgoViz::js("this.createSVGCanvas("+to_string(this->id)+",width=500,height=500)")
      }
   
      SVG(int width, int height, std::string title = "SVG") : SVG(width,height,0,0,title) 
@@ -198,6 +200,19 @@
          this->nextElementID = 0;
      }
   
+  	/** send every changed element via js message */
+  	void draw(){
+  		string cmd = "";
+  		for (auto const& entry : this->elements){
+  			// iterate over elements 
+  			SVGElement * e = entry.second;
+  			if(e->dirty){
+  				cmd += "this.change("+e->id+",{x:"+e->x+",y:"+e->y+"});\n"
+  			}
+  		}
+  		cmd += "this.draw()";
+  		this.js(cmd);
+  	}
   
      void setColor(string color = "black")
      {
@@ -238,7 +253,7 @@
      	obj["cmd"] = javascript;
      	AlgoViz::sendMsg(obj);
      }
-  
+  	
      void drawLine(int x1, int y1, int x2, int y2)
      {
          auto obj = xeus::xjson::object();
@@ -340,7 +355,9 @@
          obj["eid"] = -1;
          AlgoViz::sendMsg(obj);
      }
-  
+  	
+
+
   
      int addElement(SVGElement *element)
      {
@@ -426,6 +443,7 @@
      this->svg = nullptr;
      this->id = view->addElement(this);
      this->svg = view;
+     this->view = view;
  }
   
  SVGElement::SVGElement(const SVGElement &original)
@@ -709,11 +727,13 @@
      {
          this->x = x;
          this->y = y;
-  
+  		/*
          auto msg = this->getMsg("attrs");
          msg["attrs"] = {"cx", "cy"};
          msg["values"] = {this->x, this->y};
-         AlgoViz::sendMsg(msg);
+         */
+         this->dirty = true;
+         //AlgoViz::sendMsg(msg);
      }
   
      void setRadius(int radius)
