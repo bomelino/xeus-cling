@@ -988,8 +988,17 @@ define([
     */
     function handleJs(msg){
         try{
-            console.log("evaling code",msg.cmd)
-            eval(msg.cmd)
+            
+            if(msg.id){
+                var view = AlgoViz.views[msg.id]
+                if(view.js){
+                    console.log("evaling code in View context",view)
+                    view.js(msg.cmd)
+                }
+            } else {
+                console.log("evaling code in AlgoViz context",msg.cmd)
+                eval(msg.cmd)
+            }
         } catch(err){
             console.error(err)
         }

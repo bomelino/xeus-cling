@@ -239,9 +239,12 @@
          this->transform = transform;
      }
 
+     /** send javascript message, gets executed in view context
+     this == View.js/SVGCanvasView instance */
      void js(string javascript){
      	auto obj = xeus::xjson::object();
      	obj["type"] = "js";
+     	obj["id"] = this->id;
      	obj["cmd"] = javascript;
      	AlgoViz::sendMsg(obj);
      }

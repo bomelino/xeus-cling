@@ -700,16 +700,25 @@ class SVGView extends View {
 class SVGCanvasView extends View{
    constructor(id, w, h, gw, gh, title) {
          super(id, gw, gh, title);
-
+         this.w = w 
+         this.h = h
          this.canvas = document.createElement("CANVAS");
-         this.canvas.width = this.w
-         this.canvas.height = this.h 
+         this.canvas.width = w
+         this.canvas.height = h 
          this.content.appendChild(this.canvas);
-
          this.elements = {} // mapping id -> svg element
          this.ctx = this.canvas.getContext('2d'); // drawing context
-
          this.id_counter = 0 // handle id counter
+   }
+
+   js(cmd){
+      console.log("inside svg canvas view")
+      try{
+         eval(cmd)
+      }catch(err){
+         console.error(err)
+      }
+      
    }
 
 
