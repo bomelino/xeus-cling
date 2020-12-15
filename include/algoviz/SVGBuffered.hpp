@@ -15,8 +15,7 @@
  class SVGBuffered;
  class SVGElement
  {
-  
- protected:
+public:
      SVGBuffered *svg;
      SVGBuffered *view;
 
@@ -28,20 +27,20 @@
      void (*clickHandler)(SVGElement *);
      map<std::string,std::string> attributes = map<std::string,std::string>();
   
-     friend class SVG;
+     friend class SVGBuffered;
   
      void sendAttributes();
   
- public:
+
      SVGElement();
   
-     SVGElement(SVG *view);
+     SVGElement(SVGBuffered *view);
   
      SVGElement(const SVGElement &original);
      
      virtual ~SVGElement();
   
-     virtual void addTo(SVG *svg);
+     virtual void addTo(SVGBuffered *svg);
   
      SVGElement &operator=(const SVGElement &original);
   
@@ -125,10 +124,10 @@
   
      friend class SVGElement;
   
-     SVG(int width, int height, int gWidth, int gHeight, std::string title = "SVG")
+     SVGBuffered(int width, int height, int gWidth, int gHeight, std::string title = "SVG")
      {
          this->id = AlgoVizView::nextViewID;
-         AlgoVizView::views[this->id] = this;
+         AlgoVizView::views[this->id] = (AlgoVizView *) this;
          AlgoVizView::nextViewID++;
   
          this->type = "svg";
@@ -147,21 +146,21 @@
              gHeight = (height + 40) / this->rowHeight + ((height + 40) % this->rowHeight > 0 ? 1 : 0);
          }
 
-         AlgoViz::js("this.createSVGCanvas("+to_string(this->id)+",width=500,height=500)")
+         this->js("this.createSVGCanvas("+to_string(this->id)+",width=500,height=500)");
      }
   
-     SVG(int width, int height, std::string title = "SVG") : SVG(width,height,0,0,title) 
+     SVGBuffered(int width, int height, std::string title = "SVG") : SVGBuffered(width,height,0,0,title) 
      {
      }
   
   
   
-     SVG(std::string url, int width, int height, int gw, int gh, std::string title = "SVG") : SVG(width,height,gw,gh,title)
+     SVGBuffered(std::string url, int width, int height, int gw, int gh, std::string title = "SVG") : SVGBuffered(width,height,gw,gh,title)
      {
          this->load(url);
      }
   
-     SVG() : SVG(200,200,"SVG") {
+     SVGBuffered() : SVGBuffered(200,200,"SVG") {
      }
   
   
@@ -200,19 +199,19 @@
          this->nextElementID = 0;
      }
   
-  	/** send every changed element via js message */
-  	void draw(){
-  		string cmd = "";
-  		for (auto const& entry : this->elements){
-  			// iterate over elements 
-  			SVGElement * e = entry.second;
-  			if(e->dirty){
-  				cmd += "this.change("+e->id+",{x:"+e->x+",y:"+e->y+"});\n"
-  			}
-  		}
-  		cmd += "this.draw()";
-  		this.js(cmd);
-  	}
+    /** send every changed element via js message */
+    void draw(){
+        string cmd = "";
+        for (auto const& entry : this->elements){
+            // iterate over elements 
+            SVGElement * e = entry.second;
+            if(e->dirty){
+                cmd += "this.change("+to_string(e->id)+",{x:"+to_string(e->x)+",y:"+to_string(e->y)+"});\n";
+            }
+        }
+        cmd += "this.draw()";
+        this->js(cmd);
+    }
   
      void setColor(string color = "black")
      {
@@ -247,13 +246,13 @@
      /** send javascript message, gets executed in view context
      this == View.js/SVGCanvasView instance */
      void js(string javascript){
-     	auto obj = xeus::xjson::object();
-     	obj["type"] = "js";
-     	obj["id"] = this->id;
-     	obj["cmd"] = javascript;
-     	AlgoViz::sendMsg(obj);
+        auto obj = xeus::xjson::object();
+        obj["type"] = "js";
+        obj["id"] = this->id;
+        obj["cmd"] = javascript;
+        AlgoViz::sendMsg(obj);
      }
-  	
+    
      void drawLine(int x1, int y1, int x2, int y2)
      {
          auto obj = xeus::xjson::object();
@@ -355,7 +354,7 @@
          obj["eid"] = -1;
          AlgoViz::sendMsg(obj);
      }
-  	
+    
 
 
   
@@ -424,6 +423,7 @@
   * Implementation of SVGElement *
   *                              *
   ********************************/
+
   
  SVGElement::SVGElement() 
  {
@@ -435,7 +435,7 @@
  }
   
   
- SVGElement::SVGElement(SVG *view)
+ SVGElement::SVGElement(SVGBuffered *view)
  {
      this->x = 0;
      this->y = 0;
@@ -727,7 +727,7 @@
      {
          this->x = x;
          this->y = y;
-  		/*
+        /*
          auto msg = this->getMsg("attrs");
          msg["attrs"] = {"cx", "cy"};
          msg["values"] = {this->x, this->y};
@@ -750,6 +750,8 @@
      inline int getRadius() { return this->radius; }
  };
   
+  
+
   
  //===============================================================================
   
