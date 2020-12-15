@@ -209,7 +209,7 @@ public:
             // iterate over elements 
             SVGElement * e = entry.second;
             if(e->dirty){
-                cmd += "this.change("+to_string(this->id)+","+e->jsonAttributes()+");\n"
+                cmd += "this.change("+to_string(this->id)+","+e->jsonAttributes()+");\n";
             }
         }
         cmd += "this.draw()";
@@ -463,7 +463,7 @@ public:
   
   
 
- string jsonAttributes(){
+ string SVGElement::jsonAttributes(){
 
     std::string attr = "{ 'type': '"+this->type+"', "
             "x : " + to_string(this->x) + ","
