@@ -634,6 +634,8 @@ define([
     }
 
 
+
+
     AlgoViz.sendControlMsg = function(msg) {
         if ( AlgoViz.comm == null ) return;
         var content = {

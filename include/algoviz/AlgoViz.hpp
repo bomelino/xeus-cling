@@ -121,7 +121,9 @@
      static inline void sleep(int msec);
   
      static void sendMsg(const xeus::xjson &msg);
-  
+    
+     // execute js in algoviz context
+     static void js(string javascript);
   
      static xeus::xjson sendBlockingMsg(const xeus::xjson &msg);
   
@@ -517,6 +519,12 @@
      }
  }
   
+ void AlgoViz::js(string javascript){
+    auto obj = xeus::xjson::object();
+    obj["type"] = "js";
+    obj["cmd"] = javascript;
+    AlgoViz::sendMsg(obj);
+ }
   
  inline xeus::xjson AlgoViz::sendBlockingMsg(const xeus::xjson &msg) 
  {
