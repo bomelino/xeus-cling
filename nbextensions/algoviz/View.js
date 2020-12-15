@@ -720,7 +720,7 @@ class SVGCanvasView extends View{
       try{
          eval(cmd)
       }catch(err){
-         console.error(err)
+         console.error("error evaling code ",cmd,err)
       }
       
    }
