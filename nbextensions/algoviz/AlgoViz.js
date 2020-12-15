@@ -535,7 +535,7 @@ define([
         this.msgHandler["svg"] = handleSVG;
         this.msgHandler["module"] = handleModule;
         this.msgHandler["code"] = handleCode;
-        this.msgHandler["js"] = handleJs; // just eval javascript
+        this.msgHandler["js"] = (js)=>handleJs(js); // just eval javascript, this context set
     }
 
 
