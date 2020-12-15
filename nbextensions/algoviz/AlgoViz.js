@@ -989,7 +989,7 @@ define([
     function handleJs(msg){
         try{
             
-            if(msg.id){
+            if(msg.id != undefined){
                 var view = AlgoViz.views[msg.id]
                 if(view.js){
                     console.log("evaling code in View context",view)
