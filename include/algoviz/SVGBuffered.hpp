@@ -1,7 +1,7 @@
 
   
- #ifndef SVGBuffered_HPP
- #define SVGBuffered_HPP
+ #ifndef SVG_HPP
+ #define SVG_HPP
   
  #include <iostream>
  #include <string>
@@ -12,12 +12,12 @@
  using namespace std;
   
  class AlgoViz;
- class SVGBuffered;
+ class SVG;
  class SVGElement
  {
 public:
-     SVGBuffered *svg;
-     SVGBuffered *view;
+     SVG *svg;
+     SVG *view;
 
      int x;
      int y;
@@ -27,20 +27,20 @@ public:
      void (*clickHandler)(SVGElement *);
      map<std::string,std::string> attributes = map<std::string,std::string>();
   
-     friend class SVGBuffered;
+     friend class SVG;
   
      void sendAttributes();
   
 
      SVGElement();
   
-     SVGElement(SVGBuffered *view);
+     SVGElement(SVG *view);
   
      SVGElement(const SVGElement &original);
      
      virtual ~SVGElement();
   
-     virtual void addTo(SVGBuffered *svg);
+     virtual void addTo(SVG *svg);
   
      SVGElement &operator=(const SVGElement &original);
   
@@ -107,7 +107,7 @@ public:
   
   
   
- class SVGBuffered : public AlgoVizView
+ class SVG : public AlgoVizView
  {
   
  public:
@@ -124,7 +124,7 @@ public:
   
      friend class SVGElement;
   
-     SVGBuffered(int width, int height, int gWidth, int gHeight, std::string title = "SVG")
+     SVG(int width, int height, int gWidth, int gHeight, std::string title = "SVG")
      {
          this->id = AlgoVizView::nextViewID;
          AlgoVizView::views[this->id] = (AlgoVizView *) this;
@@ -149,18 +149,18 @@ public:
          this->js("this.createSVGCanvas("+to_string(this->id)+",width=500,height=500)");
      }
   
-     SVGBuffered(int width, int height, std::string title = "SVG") : SVGBuffered(width,height,0,0,title) 
+     SVG(int width, int height, std::string title = "SVG") : SVG(width,height,0,0,title) 
      {
      }
   
   
   
-     SVGBuffered(std::string url, int width, int height, int gw, int gh, std::string title = "SVG") : SVGBuffered(width,height,gw,gh,title)
+     SVG(std::string url, int width, int height, int gw, int gh, std::string title = "SVG") : SVG(width,height,gw,gh,title)
      {
          this->load(url);
      }
   
-     SVGBuffered() : SVGBuffered(200,200,"SVG") {
+     SVG() : SVG(200,200,"SVG") {
      }
   
   
@@ -435,7 +435,7 @@ public:
  }
   
   
- SVGElement::SVGElement(SVGBuffered *view)
+ SVGElement::SVGElement(SVG *view)
  {
      this->x = 0;
      this->y = 0;
