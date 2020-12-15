@@ -535,7 +535,7 @@ define([
         this.msgHandler["svg"] = handleSVG;
         this.msgHandler["module"] = handleModule;
         this.msgHandler["code"] = handleCode;
-        this.msgHandler["js"] = (js)=>handleJs(js); // just eval javascript, this context set
+        this.msgHandler["js"] = (js)=>handleJs.call(AlgoViz,js); // just eval javascript, AlgoViz == this 
     }
 
 
@@ -988,7 +988,7 @@ define([
     /**
     receive js from c++ :)
     */
-    handleJs = (msg)=>{
+    function handleJs(msg){
         try{
             
             if(msg.id != undefined){
