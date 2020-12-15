@@ -83,7 +83,7 @@ define([
                 console.log("[AlgoViz] Comm : Connection opened with id " + comm.comm_id);
     
                 comm.on_msg( (msg) => {
-                    //console.log("[on_msg]",msg);
+                   
                     AlgoViz.processMsg(msg.content.data);
                 });
             });
@@ -996,7 +996,7 @@ define([
                     view.js(msg.cmd)
                 }
             } else {
-                //console.log("evaling code in AlgoViz context",msg.cmd)
+                console.log("evaling code in AlgoViz context",msg.cmd)
                 eval(msg.cmd)
             }
         } catch(err){
@@ -1008,11 +1008,26 @@ define([
     function createSVG(id,width,height,gwidth,gheight,title) {
         if ( AlgoViz.views == null ) AlgoViz.views = [];
         
-        //var view = new SVGView(id,width,height,gwidth,gheight,title);
-        // trying new and fast canvas view
-        var view = new SVGCanvasView(id,width,height,gwidth,gheight,title);
+        var view = new SVGView(id,width,height,gwidth,gheight,title);
         algoviz_container.append(view.div);
         
+        
+        if ( AlgoViz.views[id] != null ) {
+            algoviz_container.remove(AlgoViz.views[id].div);
+        }
+
+        AlgoViz.views[id] = view;
+    }
+
+    /** new buffered svg view
+    this gets called directly via eval (js message)
+    */
+    function createSVGBuffered(id,width=500,height=500,gwidth=1,gheight=1,title="buffered svg view") {
+        console.log("creating buffered svg view")
+        if ( AlgoViz.views == null ) AlgoViz.views = [];        
+
+        var view = new SVGBufferedView(id,width,height,gwidth,gheight,title);
+        algoviz_container.append(view.div);        
         
         if ( AlgoViz.views[id] != null ) {
             algoviz_container.remove(AlgoViz.views[id].div);

@@ -1,7 +1,7 @@
 
   
- #ifndef SVGFAST_HPP
- #define SVGFAST_HPP
+ #ifndef SVGBuffered_HPP
+ #define SVGBuffered_HPP
   
  #include <iostream>
  #include <string>
@@ -106,7 +106,7 @@
   
   
   
- class SVG : public AlgoVizView
+ class SVGBuffered : public AlgoVizView
  {
   
  public:
@@ -134,15 +134,8 @@
          this->height = height;
   
          AlgoViz::show();
-  
-         auto msg = xeus::xjson::object();
-         msg["type"] = "svg";
-         msg["cmd"] = "create";
-         msg["width"] = width;
-         msg["height"] = height;
-         msg["title"] = title;
-  
-         if (gWidth <= 0)
+
+          if (gWidth <= 0)
          {
              gWidth = width / this->colWidth + (width % this->colWidth > 0 ? 1 : 0);
          }
@@ -151,11 +144,8 @@
          {
              gHeight = (height + 40) / this->rowHeight + ((height + 40) % this->rowHeight > 0 ? 1 : 0);
          }
-  
-         msg["gwidth"] = gWidth;
-         msg["gheight"] = gHeight;
-         msg["id"] = this->id;
-         AlgoViz::sendMsg(msg);
+
+         AlgoViz::js("this.createSVGBuffered("+to_string(this->id)+",width=500,height=500)")
      }
   
      SVG(int width, int height, std::string title = "SVG") : SVG(width,height,0,0,title) 

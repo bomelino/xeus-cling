@@ -696,6 +696,7 @@ class SVGView extends View {
 
 /**
    Viewing SVG by drawing on a html canvas
+   (this was a test. it seems like this isnt faster than svg)
 */
 class SVGCanvasView extends View{
    constructor(id, w, h, gw, gh, title) {
@@ -768,6 +769,311 @@ class SVGCanvasView extends View{
       }  
    }
 
+}
+
+
+/** 
+draws only once per frame (call view.draw())
+*/
+class SVGBufferedView extends View {
+svg = null;
+   elements = null;
+   menu = null;
+
+   /**
+   @param id
+   @param w
+   @param h
+   @param gw {number} grid width
+   @param gh {number} grid height
+   @param title {string} title
+   */
+   constructor(id, w, h, gw, gh, title) {
+      super(id, gw, gh, title);
+      this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      this.svg.setAttribute("width", "100%");
+      this.svg.setAttribute("height", "100%");
+      this.svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+      this.svg.setAttribute("id", "_" + id);
+      this.content.appendChild(this.svg);
+
+      this.elements = [];
+
+      this.handlers["add"] = this.addElement;
+      this.handlers["clone"] = this.cloneElement;
+      this.handlers["remove"] = this.removeElement;
+      this.handlers["clear"] = this.clear;
+      this.handlers["style"] = this.handleStyle;
+      this.handlers["attr"] = this.handleAttr;
+      this.handlers["attrs"] = this.handleAttrs;
+      this.handlers["transform"] = this.handleTransform;
+      this.handlers["rotate"] = this.handleRotate;
+      this.handlers["style"] = this.handleStyle;
+      this.handlers["tofront"] = this.toFront;
+      this.handlers["viewbox"] = this.handleViewBox;
+      this.handlers["addChild"] = this.handleAddChild;
+      this.handlers["removeChild"] = this.handleRemoveChild;
+      this.handlers["empty"] = this.handleEmpty;
+      this.handlers["settext"] = this.handleSetText;
+      this.handlers["fit"] = this.fitToContent;
+      this.handlers["load"] = this.handleLoad;
+      this.handlers["idattr"] = this.handleIDAttr;
+   }
+
+   js(cmd){
+         //console.log("inside svg canvas view")
+         try{
+            eval(cmd)
+         }catch(err){
+            console.error(err)
+         }
+         
+   }
+
+   add(element) {
+      if (element.id != -1) {
+         if (this.elements[element.id] == null) {
+            this.elements[element.id] = element;
+            this.svg.appendChild(element.svg);
+            element.svg.id = "_" + this.id + "_" + element.id;
+            element.parent = this;
+         }
+      } else {
+         // Aonymous element
+         this.svg.appendChild(element.svg);
+         element.parent = this;
+      }
+   }
+
+
+   remove(element) {
+      var i = this.elements.indexOf(element);
+      if (i != -1) {
+         this.elements[i] = null;
+         this.svg.removeChild(element.svg);
+      }
+   }
+
+
+   clear() {
+      while (this.svg.firstChild != null) {
+         this.svg.removeChild(this.svg.firstChild);
+      }
+      this.elements = [];
+   }
+
+
+
+   addElement(msg, parent) {
+      var el = new SVGElement(msg);
+      this.add(el);
+   }
+
+
+   cloneElement(msg, parent) {
+      var original = this.elements[msg.original];
+      if (original == null) return;
+
+      var el = new SVGElement(original, msg.eid);
+      this.add(el);
+   }
+
+
+   removeElement(msg, parent) {
+      var el = this.elements[msg.eid];
+      this.remove(el);
+   }
+
+
+   handleStyle(msg, parent) {
+      var el = this.elements[msg.eid];
+      if (el == null) return;
+      el.setStyle(msg.name, msg.value);
+   }
+
+   handleStyle(msg, parent) {
+      var el = this.elements[msg.eid];
+      if (el == null) return;
+      el.setStyle(msg.style, msg.value);
+   }
+
+   handleAttr(msg, parent) {
+      var el = this.elements[msg.eid];
+      if (el == null) return;
+      el.setAttr(msg.attr, msg.value);
+   }
+
+
+   handleAttrs(msg, parent) {
+      var el = this.elements[msg.eid];
+      if (el == null) return;
+      el.setAttrs(msg.attrs, msg.values);
+   }
+
+
+   handleTransform(msg, parent) {
+      var el = this.elements[msg.eid];
+      if (el == null) return;
+      var bbox = el.svg.getBBox();
+      var rx = bbox.x + bbox.width / 2;
+      var ry = bbox.y + bbox.height / 2;
+      var angle = msg.angle;
+      var x = msg.x;
+      var y = msg.y;
+      el.setAttr("transform", "translate(" + (x - bbox.width / 2) + "," + (y - bbox.height / 2) + ") " + "rotate(" + angle + "," + rx + "," + ry + ")");
+   }
+
+   handleRotate(msg, parent) {
+      var el = this.elements[msg.eid];
+      if (el == null) return;
+      var bbox = el.svg.getBBox();
+      var rx = bbox.x + bbox.width / 2;
+      var ry = bbox.y + bbox.height / 2;
+      var angle = msg.angle;
+      el.setAttr("transform", "rotate(" + angle + "," + rx + "," + ry + ")");
+   }
+
+
+   handleViewBox(msg, parent) {
+      this.svg.setAttribute("viewBox", msg.coords);
+      if ( msg.aspect != "" ) {
+         this.svg.setAttribute("preserveAspectRatio", msg.aspect);
+      }
+   }
+
+
+   handleAddChild(msg, parent) {
+      if (msg.childid != -1) {
+         var el = this.elements[msg.eid];
+         var child = this.elements[msg.childid];
+         el.svg.appendChild(child.svg);
+      } else {
+         var el = this.elements[msg.eid];
+         // create anonymous child
+         // Masquerade group id
+         msg.eid = -1;
+         var child = new SVGElement(msg);
+         el.svg.appendChild(child.svg);
+      }
+   }
+
+
+   handleRemoveChild(msg, parent) {
+      var el = this.elements[msg.eid];
+      var child = this.elements[msg.childid];
+      el.svg.removeChild(child.svg);
+   }
+
+   handleEmpty(msg, parent) {
+      var el = this.elements[msg.eid];
+      while (el.svg.firstChild != null) {
+         el.svg.removeChild(el.svg.firstChild);
+      }
+   }
+
+   toFront(msg, parent) {
+      var el = this.elements[msg.eid];
+      if (el == null) return;
+      this.svg.removeChild(el.svg);
+      this.svg.appendChild(el.svg);
+   }
+
+
+   handleSetText(msg, parent) {
+      var el = this.elements[msg.eid];
+      if (el == null) return;
+      el.svg.textContent = msg.content;
+   }
+
+
+   fitToContent() {
+      var svg = this.svg;
+      var bbox = svg.getBBox();
+      // Update the width and height using the size of the contents
+      if (bbox.width > 500)
+         svg.setAttribute("width", bbox.x + bbox.width + bbox.x);
+      // svg.setAttribute("height", bbox.y + bbox.height + bbox.y);
+   }
+
+   storeMouseData(event, data) {
+      var id = event.target.id;
+      var ids = id.split("_");
+      var viewId = ids[1];
+      var elId = -1;
+
+      if (ids.length > 1) {
+         elId = ids[2];
+      }
+
+      var pt = this.svg.createSVGPoint();
+      pt.x = event.clientX;
+      pt.y = event.clientY;
+      var svgPt = pt.matrixTransform(this.svg.getScreenCTM().inverse());
+      data.x = svgPt.x;
+      data.y = svgPt.y;
+      data.screenx = event.screenX;
+      data.screeny = event.screenY;
+      // data.buttons = event.which | event.button;
+      data.view = Number(this.id);
+      data.element = Number(elId);
+      data.target = event.target.getAttribute("id");
+      data.legal = true;
+   }
+
+
+   handleIDAttr(msg, parent) {
+      var el = this.svg.getElementById(msg.eid);
+      if (el != null) {
+         var attrAttr = msg.attr.replace(/[A]/g, (match) => { return '-' + match.toLowerCase(); });
+         var styleAttr = msg.attr.replace(/-[a-z]/g, (match) => { return match.substring(1).toUpperCase(); });
+         try {
+            el.setAttribute(attrAttr, msg.value);
+         } catch (ex) {}
+         try {
+            el.style[styleAttr] = msg.value;
+         } catch (ex) {}
+      } else {
+         console.warn("[AlgoViz] Element with id " + msg.eid + " not found!");
+      }
+   }
+
+
+   handleLoad(msg, parent) {
+      var url = msg.url;
+      var request = new XMLHttpRequest();
+      request.open("GET", url);
+      request.addEventListener("load", (event) => {
+         if (request.status >= 200 && request.status < 300) {
+            var parser = new DOMParser();
+            var xml = parser.parseFromString(request.responseText, "text/xml");
+            var svgs = xml.getElementsByTagNameNS("http://www.w3.org/2000/svg", "svg");
+            var svg = svgs[0];
+            var w = Number(svg.getAttribute("width").match(/\d+/));
+            var h = Number(svg.getAttribute("height").match(/\d+/));
+            document.adoptNode(svg);
+            this.content.removeChild(this.svg);
+            this.svg = svg;
+            this.content.appendChild(this.svg);
+            this.svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+            this.svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
+         } else {
+            console.warn(request.statusText);
+            console.warn(request.responseText);
+         }
+      });
+      request.send();
+   }
+
+
+   getIDs() {
+      var els = this.svg.querySelectorAll("[id]");
+      var ids = [];
+      for (var el of els) {
+         ids.push(el.getAttribute("id"));
+      }
+      var obj = { ids: ids };
+      return JSON.stringify(obj);
+   }
 }
 
 
