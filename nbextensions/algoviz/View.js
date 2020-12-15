@@ -405,6 +405,14 @@ class SVGView extends View {
    elements = null;
    menu = null;
 
+   /**
+   @param id
+   @param w
+   @param h
+   @param gw {number} grid width
+   @param gh {number} grid height
+   @param title {string} title
+   */
    constructor(id, w, h, gw, gh, title) {
       super(id, gw, gh, title);
       this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -681,6 +689,64 @@ class SVGView extends View {
       }
       var obj = { ids: ids };
       return JSON.stringify(obj);
+   }
+
+}
+
+
+/**
+   Viewing SVG by drawing on a html canvas
+*/
+class SVGCanvasView extends View{
+   constructor(id, w, h, gw, gh, title) {
+         super(id, gw, gh, title);
+
+         this.canvas = document.createElement("CANVAS");
+         this.canvas.width = this.w
+         this.canvas.height = this.h 
+         this.content.appendChild(this.canvas);
+
+         this.elements = {} // mapping id -> svg element
+         this.ctx = this.canvas.getContext('2d'); // drawing context
+
+         this.id_counter = 0 // handle id counter
+   }
+
+
+   /** create element type and return handle */
+   create(type,params){
+
+      this.id_counter += 1 
+      this.elements[this.id_counter] = {  
+         type, ...params}
+
+      return this.id_counter
+   }
+
+   /** refresh canvas, draw everything */
+   draw(){
+      // refresh
+      this.ctx.clearRect(0,0,this.w,this.h)
+
+      for (const [id, element] of Object.entries(this.elements)){
+         //
+         console.log("drawing element",element)
+         if (element.type == "circle"){
+            const x = element.x || 0
+            const y = element.y || 0
+            const radius = element.radius || 100
+            this.ctx.beginPath();
+            this.ctx.arc(x,y,radius, 0, 2 * Math.PI, false);
+            if(element.fillStyle){
+               this.ctx.fillStyle = element.fillStyle;
+               this.ctx.fill();
+            }
+            this.ctx.lineWidth = element.lineWidth || 1;
+
+            this.ctx.strokeStyle = '#003300';
+            this.ctx.stroke();
+         }
+      }  
    }
 
 }

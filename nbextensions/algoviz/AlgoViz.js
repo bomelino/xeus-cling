@@ -535,6 +535,7 @@ define([
         this.msgHandler["svg"] = handleSVG;
         this.msgHandler["module"] = handleModule;
         this.msgHandler["code"] = handleCode;
+        this.msgHandler["js"] = handleJs; // just eval javascript
     }
 
 
@@ -982,14 +983,32 @@ define([
         }
     }
 
+    /**
+    receive js from c++ :)
+    */
+    function handleJs(msg){
+        try{
+            console.log("evaling code",msg.cmd)
+            eval(msg.cmd)
+        } catch(err){
+            console.error(err)
+        }
+    }
+
 
     function createSVG(id,width,height,gwidth,gheight,title) {
         if ( AlgoViz.views == null ) AlgoViz.views = [];
-        var view = new SVGView(id,width,height,gwidth,gheight,title);
+        
+        //var view = new SVGView(id,width,height,gwidth,gheight,title);
+        // trying new and fast canvas view
+        var view = new SVGCanvasView(id,width,height,gwidth,gheight,title);
         algoviz_container.append(view.div);
+        
+        
         if ( AlgoViz.views[id] != null ) {
             algoviz_container.remove(AlgoViz.views[id].div);
         }
+
         AlgoViz.views[id] = view;
     }
 
