@@ -1000,6 +1000,7 @@ define([
                 eval(msg.cmd)
             }
         } catch(err){
+            console.error("error evaling code",msg.cmd)
             console.error(err)
         }
     }
