@@ -18,7 +18,7 @@
 public:
      SVG *svg;
      SVG *view;
-
+     string type = "";
      int x;
      int y;
      int id;
@@ -206,7 +206,7 @@ public:
             // iterate over elements 
             SVGElement * e = entry.second;
             if(e->dirty){
-                cmd += "this.change("+to_string(e->id)+",{x:"+to_string(e->x)+",y:"+to_string(e->y)+"});\n";
+                cmd += "this.change("+to_string(e->id)+",{type:"+e->type+"x:"+to_string(e->x)+",y:"+to_string(e->y)+"});\n";
             }
         }
         cmd += "this.draw()";
@@ -669,6 +669,7 @@ public:
          this->x = cx;
          this->y = cy;
          this->radius = radius;  
+         this->type = "circle";
      }
   
      Circle(const Circle &original) : SVGElement(original)
