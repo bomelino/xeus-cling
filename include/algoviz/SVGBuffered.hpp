@@ -465,11 +465,18 @@ public:
 
  string SVGElement::jsonAttributes(){
 
-    std::string attr = "{ 'type': '"+this->type+"', "
+    std::string s = "{ 'type': '"+this->type+"', "
             "x : " + to_string(this->x) + ","
-            "y : " + to_string(this->y) + ","
-            "}"; // todo geh durch alle attributes
-    return attr;    
+            "y : " + to_string(this->y) + ",";
+
+    for ( auto attr : this->attributes ) {        
+        
+        s += "'"+attr.first+"':";
+        s += "'"+attr.second+"',";
+     }
+
+        s += "}"; 
+    return s;    
     
  } 
  void SVGElement::addTo(SVG *svg) {
