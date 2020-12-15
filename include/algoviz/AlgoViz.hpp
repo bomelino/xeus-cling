@@ -504,6 +504,7 @@
      }
   
      if ( msg["type"] != "#IGNORE") {
+        /*
          auto now = chrono::steady_clock::now();
          auto dur = chrono::duration_cast<chrono::microseconds>(now - AlgoViz::lastMessageTime).count();
          if ( dur < 1500.0 ) {
@@ -511,6 +512,8 @@
          }
          algoviz::comm->send(msg);
          AlgoViz::lastMessageTime = chrono::steady_clock::now();
+         */
+         algoviz::comm->send(msg);
      }
  }
   
