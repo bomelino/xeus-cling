@@ -83,7 +83,7 @@ define([
                 console.log("[AlgoViz] Comm : Connection opened with id " + comm.comm_id);
     
                 comm.on_msg( (msg) => {
-                    console.log("[on_msg]",msg);
+                    //console.log("[on_msg]",msg);
                     AlgoViz.processMsg(msg.content.data);
                 });
             });

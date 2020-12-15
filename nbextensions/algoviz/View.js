@@ -749,7 +749,7 @@ class SVGCanvasView extends View{
 
       for (const [id, element] of Object.entries(this.elements)){
          //
-         console.log("drawing element",element)
+         //console.log("drawing element",element)
          if (element.type == "circle"){
             const x = element.x || 0
             const y = element.y || 0
