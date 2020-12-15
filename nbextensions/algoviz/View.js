@@ -709,6 +709,9 @@ class SVGCanvasView extends View{
          this.elements = {} // mapping id -> svg element
          this.ctx = this.canvas.getContext('2d'); // drawing context
          this.id_counter = 0 // handle id counter
+
+         // for debugging
+         window.view = this
    }
 
    js(cmd){
@@ -722,14 +725,21 @@ class SVGCanvasView extends View{
    }
 
 
-   /** create element type and return handle */
-   create(type,params){
+   /** create element with id and type */
+   create(id,type,params){
 
-      this.id_counter += 1 
-      this.elements[this.id_counter] = {  
+      this.elements[id] = {  
          type, ...params}
 
-      return this.id_counter
+   }
+
+   /** change element attributes*/
+   change(id,params){
+      this.elements[id] = {
+         ... this.elements[id],
+         ... params
+      }
+      this.draw()
    }
 
    /** refresh canvas, draw everything */
