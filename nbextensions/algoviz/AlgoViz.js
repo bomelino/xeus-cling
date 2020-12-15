@@ -988,7 +988,7 @@ define([
     /**
     receive js from c++ :)
     */
-    function handleJs(msg){
+    handleJs = (msg)=>{
         try{
             
             if(msg.id != undefined){
