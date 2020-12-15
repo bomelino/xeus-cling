@@ -715,7 +715,7 @@ class SVGCanvasView extends View{
    }
 
    js(cmd){
-      console.log("inside svg canvas view")
+      //console.log("inside svg canvas view")
       try{
          eval(cmd)
       }catch(err){

@@ -992,11 +992,11 @@ define([
             if(msg.id != undefined){
                 var view = AlgoViz.views[msg.id]
                 if(view.js){
-                    console.log("evaling code in View context",view)
+                    //console.log("evaling code in View context",view)
                     view.js(msg.cmd)
                 }
             } else {
-                console.log("evaling code in AlgoViz context",msg.cmd)
+                //console.log("evaling code in AlgoViz context",msg.cmd)
                 eval(msg.cmd)
             }
         } catch(err){
