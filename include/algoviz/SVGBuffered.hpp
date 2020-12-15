@@ -591,50 +591,32 @@ public:
   
  void SVGElement::setColor(string color)
  {
-     auto msg = this->getMsg("attrs");
-     msg["attrs"] = {"stroke"};
-     msg["values"] = {color};
      this->attributes["stroke"] = color;
-     AlgoViz::sendMsg(msg);
+     this->dirty = true;
  }
   
  void SVGElement::setColor(int red, int green, int blue, float alpha)
  {
-  
-     auto msg = this->getMsg("attrs");
-     msg["attrs"] = {"stroke"};
      string color = "rgba(" + std::to_string(red) + "," + std::to_string(green) + "," + std::to_string(blue) + "," + std::to_string(alpha) + ")";
-     msg["values"] = {color};
-     this->attributes["stroke"] = color;
-     AlgoViz::sendMsg(msg);
+     this->setColor(color);
  }
   
  void SVGElement::setFill(string color)
  {
-     auto msg = this->getMsg("attrs");
-     msg["attrs"] = {"fill"};
-     msg["values"] = {color};
+     this->dirty = true;
      this->attributes["fill"] = color;
-     AlgoViz::sendMsg(msg);
  }
   
  void SVGElement::setFill(int red, int green, int blue, float alpha)
  {
-     auto msg = this->getMsg("attrs");
-     msg["attrs"] = {"fill"};
      string color = "rgba(" + std::to_string(red) + "," + std::to_string(green) + "," + std::to_string(blue) + "," + std::to_string(alpha) + ")";
-     this->attributes["fill"] = color;
-     msg["values"] = {color};
-     AlgoViz::sendMsg(msg);
+     this->setFill(color);
  }
   
  void SVGElement::setStrokeWidth(int width)
  {
-     auto msg = this->getMsg("attrs");
-     msg["attrs"] = {"stroke-width"};
-     msg["values"] = {width};
      this->attributes["stroke-width"] = to_string(width);
-     AlgoViz::sendMsg(msg);
+     this->dirty = true;
  }
   
  inline bool operator==(const SVGElement &left, const SVGElement &right)
@@ -683,11 +665,10 @@ public:
   
      Circle(int cx, int cy, int radius, SVG *view) : SVGElement(view)
      {
+        // wird im SVGElement konstruktor schon zur view hinzugefügt
          this->x = cx;
          this->y = cy;
-         this->radius = radius;
-  
-         this->create();
+         this->radius = radius;  
      }
   
      Circle(const Circle &original) : SVGElement(original)
@@ -704,11 +685,7 @@ public:
      }
   
      void create() {
-         auto msg = this->getMsg("add");
-         msg["form"] = "circle";
-         msg["attrs"] = {"cx", "cy", "r"};
-         msg["values"] = {this->x, this->y, this->radius};
-         AlgoViz::sendMsg(msg);
+        
      }
   
   
@@ -727,13 +704,7 @@ public:
      {
          this->x = x;
          this->y = y;
-        /*
-         auto msg = this->getMsg("attrs");
-         msg["attrs"] = {"cx", "cy"};
-         msg["values"] = {this->x, this->y};
-         */
          this->dirty = true;
-         //AlgoViz::sendMsg(msg);
      }
   
      void setRadius(int radius)
@@ -741,10 +712,7 @@ public:
          if (radius < 0)
              return;
          this->radius = radius;
-         auto msg = this->getMsg("attrs");
-         msg["attrs"] = {"r"};
-         msg["values"] = {radius};
-         AlgoViz::sendMsg(msg);
+         this->dirty = true;
      }
   
      inline int getRadius() { return this->radius; }
