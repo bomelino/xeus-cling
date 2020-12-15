@@ -206,7 +206,7 @@ public:
             // iterate over elements 
             SVGElement * e = entry.second;
             if(e->dirty){
-                cmd += "this.change("+to_string(e->id)+",{type:"+e->type+"x:"+to_string(e->x)+",y:"+to_string(e->y)+"});\n";
+                cmd += "this.change("+to_string(e->id)+",{type:'"+e->type+"',x:"+to_string(e->x)+",y:"+to_string(e->y)+"});\n";
             }
         }
         cmd += "this.draw()";
