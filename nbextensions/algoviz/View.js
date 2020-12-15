@@ -766,13 +766,14 @@ class SVGCanvasView extends View{
             const radius = element.radius || 100
             ctx.beginPath();
             ctx.arc(x,y,radius, 0, 2 * Math.PI, false);
-            if(element.fillStyle){
-               ctx.fillStyle = element.fillStyle;
+            
+            if(element.fill){
+               ctx.fillStyle = element.fill;
                ctx.fill();
             }
-            ctx.lineWidth = element.lineWidth || 1;
+            ctx.lineWidth = element["stroke-width"] || 1;
 
-            ctx.strokeStyle = '#003300';
+            ctx.strokeStyle = element.stroke || 'black';
             ctx.stroke();
          }
       }  

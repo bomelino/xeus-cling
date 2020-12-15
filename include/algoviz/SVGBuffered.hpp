@@ -688,7 +688,8 @@ public:
         // wird im SVGElement konstruktor schon zur view hinzugefügt
          this->x = cx;
          this->y = cy;
-         this->radius = radius;  
+         this->radius = radius; 
+         this->attributes["radius"] = to_string(radius) 
          this->type = "circle";
      }
   
@@ -733,6 +734,7 @@ public:
          if (radius < 0)
              return;
          this->radius = radius;
+         this->attributes["radius"] = to_string(radius)
          this->dirty = true;
      }
   
